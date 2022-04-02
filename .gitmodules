@@ -1,0 +1,3 @@
+[submodule "goodsoup-killer"]
+	path = goodsoup-killer
+	url = https://github.com/Camiletb/goodsoup-killer.git
