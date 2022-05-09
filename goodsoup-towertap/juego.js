@@ -236,7 +236,32 @@ function cortar(headExtremos, prevExtremos){
     const prevSize = prevExtremos[1] - prevExtremos[0];
     const headSize = headExtremos[1] - headExtremos[0];
     const dist = prevExtremos[1] - headExtremos[1];
-    const newSize = headSize - dist; // widthprev - distancia entre prevPP[1] y headPP[0] = nuevo width/depth
+    //const newSize = headSize - dist; // widthprev - distancia entre prevPP[1] y headPP[0] = nuevo width/depth
+    let newSize = 0;
+
+    let delta;
+
+    if (head.direction == "x") {
+      delta = head.threejs.position.x - prev.threejs.position.x;
+    }
+    else {
+      delta = head.threejs.position.z - prev.threejs.position.z;
+    }
+    
+    let cuelgueSize = Math.abs(delta);
+    let overlap = headSize - cuelgueSize;
+    
+    if (overlap > 0) { // cortar
+      newSize = overlap;
+      if (head.direction == "x") {
+        BoxSize[0] = overlap;
+      }
+      else {
+        BoxSize[1] = overlap;
+      }
+    }
+
+    
     //Si el centro de la cabeza es mayor o menor que el centro del bloque anterior se queda a la derecha o a la izquierda del bloque anterior)
     //let centroPrev =prevSize/2;
     // if(head.position == "x"){
@@ -269,31 +294,31 @@ function cortar(headExtremos, prevExtremos){
     // }
     console.log("El nuevo tamaño es", newSize);
     
-    let aux = Math.abs(newSize);
-    if(newSize > 0){ //Izquierda
-        p0 = prevExtremos[0]; //nuevo p0
-        p1 = prevExtremos[0] + newSize; //nuevo p1
+    // let aux = Math.abs(newSize);
+    // if(newSize > 0){ //Izquierda
+    //     p0 = prevExtremos[0]; //nuevo p0
+    //     p1 = prevExtremos[0] + newSize; //nuevo p1
 
-    }else if (newSize < 0){ //derecha
-        p0 = prevExtremos[1] + newSize; //nuevo p0 (signo más porque newSize es negativa)
-        p1 = prevExtremos[1]; //nuevo p1
-    }else{
-        console.log("Nada que cortar!");
-    }
+    // }else if (newSize < 0){ //derecha
+    //     p0 = prevExtremos[1] + newSize; //nuevo p0 (signo más porque newSize es negativa)
+    //     p1 = prevExtremos[1]; //nuevo p1
+    // }else{
+    //     console.log("Nada que cortar!");
+    // }
 
-    const pini = (p1 - p0) / 2; // nuevo centro
+    // const pini = (p1 - p0) / 2; // nuevo centro
     
-    const newExtremos = [p0, p1];
-    //const vectorMedidas = [newExtremos, newSize, pini];
-    console.log("Nuevo tamaño: ", newSize);
-    if(head.direction == "x"){
-        BoxSize[0] = aux;
-        nuevoCentro[1] = pini;
-    }
-    else{
-        BoxSize[1] = aux;
-        nuevoCentro[0] = pini;
-    }
+    // const newExtremos = [p0, p1];
+    // //const vectorMedidas = [newExtremos, newSize, pini];
+    // console.log("Nuevo tamaño: ", newSize);
+    // if(head.direction == "x"){
+    //     BoxSize[0] = aux;
+    //     nuevoCentro[1] = pini;
+    // }
+    // else{
+    //     BoxSize[1] = aux;
+    //     nuevoCentro[0] = pini;
+    // }
 }
 
 //Resetear el juego
