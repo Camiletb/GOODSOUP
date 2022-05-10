@@ -6,8 +6,8 @@
 let camera, scene, renderer;
 let pila = [];  // Pila que contiene los bloques
 let colgajo;
-const hBox = 1; // Altura del bloque
-const initBoxSize = 5;  // Tamaño inicial del bloque
+const hBox = 0.6; // Altura del bloque
+const initBoxSize = 3;  // Tamaño inicial del bloque
 const hCamera = 5;  // Posición inicial de la cámara
 
 let BoxSize = [initBoxSize, initBoxSize]; // Array de tamaños de cajas

@@ -1,0 +1,31 @@
+/* Para borrar los margenes del navegador */
+body{
+    margin: 0;
+}
+
+#nivel{
+    padding: 10px;
+    background-color: brown;
+    position: absolute;
+    color: white;
+    font-size: 3em;
+    font-weight: bold;
+    top: 227px;
+    right: 30px;
+
+}
+
+#reglas{
+    padding: 10px;
+    position: absolute;
+    color: white;
+    font-size: 3em;
+    font-weight: bold;
+    bottom: 22px;
+    right: 30px;
+
+}
+
+.juego{
+    /* width: 80vh; */
+}
