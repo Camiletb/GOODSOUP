@@ -26,7 +26,7 @@ const divLevel = document.getElementById("nivel");
 const divReglas = document.getElementById("reglas");
 
 //instrucciones
-let ins = "Con R reseteas la partida. Pero por ninguna razón pulses X.";
+let ins = "Con 'R' reseteas la partida. Pero por ninguna razón pulses 'X'.";
 
 
 init();
@@ -373,11 +373,16 @@ window.addEventListener("keydown", (e) => {
   if(e.key == "r" || e.key == "R")
     reset();
   if(e.key == "x" || e.key == "X"){
-
-    divReglas.innerText = "Desobediente y sin ninguna vergüenza. Me gusta.";
-    ins = "Desobediente y sin ninguna vergüenza. Me gusta.";
-
-    
+    divReglas.innerText = "Oye. Eso era una 'X'!";
+    ins = "Desobediente y sin ninguna vergüenza. Me gusta. Con 'Z' puedes volver a las instrucciones.";
+  }
+  if(e.key == "z" || e.key == "Z"){
+    divReglas.innerText = "Ah, pues no.";
+    ins = "Soy una torre malvada, pero no mucho, con 'i' puedes revisar las instrucciones.";
+  }
+  if(e.key == "i" || e.key == "I"){
+    divReglas.innerText = "Tómalas, aunque no creo que las necesites. Sólo buscabas conversar conmigo.";
+    ins = "Con 'R' reseteas la partida. Con click colocas tu bloque.";
   }
   
 });
