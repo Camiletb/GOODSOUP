@@ -10,7 +10,7 @@ const initBoxSize = 5;  // Tamaño inicial del bloque
 const hCamera = 5;  // Posición inicial de la cámara
 
 let BoxSize = [initBoxSize, initBoxSize]; // Array de tamaños de cajas
-let nuevoCentro = [-10, 0];
+let nuevoCentro = [];
 
 //Contadores y auxiliares
 let levelCont = 1;
@@ -158,14 +158,19 @@ function manejador(){
     //Usamos setAnimationLoop porque setAnimationFrame sólo se
     //ejecuta una vez, y necesitamos que la animación se ejecute en bucle
     jugando = true;
-  }else{
+  }
+  else{
+    const head = pila[pila.length - 1];
+    const prev = pila[pila.length - 2];
+    var dir = head.direction;
+    const siguienteX = dir == "x" ? 0 : -10; // Si es x, 0, si es z, -10
+    const siguienteZ = dir == "z" ? 0 : -10; // Si es z, 0, si es x, -10
+    nuevoCentro = [siguienteX, siguienteZ];
     if(pila.length > 0){
         const nuevasMedidas = [];
       console.log("Click! Bloque número: ", pila.length, ".");
 
       // Comprobamos si el último bloque está encima del bloque anterior
-      const head = pila[pila.length - 1];
-      const prev = pila[pila.length - 2];
       const xhead = [head.threejs.position.x - head.width/2, head.threejs.position.x + head.width/2];
       const zhead = [head.threejs.position.z - head.depth/2, head.threejs.position.z + head.depth/2];
       const xprev = [prev.threejs.position.x - prev.width/2, prev.threejs.position.x + prev.width/2];
@@ -202,13 +207,12 @@ function manejador(){
       //const nivel = pila.pop();
       //scene.remove(nivel.threejs);
       // const head = pila[pila.length - 1];
-      if(!lose){
-        const dir = head.direction;
 
+      if(!lose){
+        dir = head.direction;
         //Next level
         //posición inicial
-        const siguienteX = dir == "x" ? 0 : -10; // Si es x, 0, si es z, -10
-        const siguienteZ = dir == "z" ? 0 : -10; // Si es z, 0, si es x, -10
+
         const siguienteDir = dir == "x" ? "z" : "x";
         const nWidth = BoxSize[0]; // Se cambiará por los futuros tamaños
         const nDepth = BoxSize[1];
@@ -217,15 +221,8 @@ function manejador(){
         encima = false;
         //addNivel(siguienteX, siguienteZ, nWidth, nDepth, siguienteDir);
         console.log("Las dimensiones del cubo van a ser", nWidth," x ", nDepth);
-        addNivel(siguienteX, siguienteZ, nWidth, nDepth, siguienteDir);
+        addNivel(nuevoCentro[0], nuevoCentro[1], nWidth, nDepth, siguienteDir);
       }
-      // if(nivel.direction == "z"){
-      //   addNivel(0, 0, nivel.width, nivel.depth);
-      // }else{
-      //   addNivel(0, 0, nivel.depth, nivel.width);
-      // }
-      // addNivel(0, 0, nivel.width, nivel.depth);
-      // addNivel(0, 0, nivel.depth, nivel.width);
     }
   }
 }
@@ -262,13 +259,23 @@ function cortar(headExtremos, prevExtremos){
     if (overlap > 0) { // cortar
       newSize = overlap;
       if (head.direction == "x") {
-        BoxSize[0] = overlap;
+        BoxSize[0] = newSize;
+        //nuevoCentro[0] -= delta;
+        if (delta < 0)
+          nuevoCentro[0] = prevExtremos[0] + newSize/2;
+        else
+          nuevoCentro[0] = prevExtremos[1] - newSize/2;
       }
       else {
-        BoxSize[1] = overlap;
+        BoxSize[1] = newSize;
+        if (delta < 0)
+          nuevoCentro[1] = prevExtremos[0] + newSize/2;
+        else
+          nuevoCentro[1] = prevExtremos[1] - newSize/2;
       }
     }
 
+    
     
     //Si el centro de la cabeza es mayor o menor que el centro del bloque anterior se queda a la derecha o a la izquierda del bloque anterior)
     //let centroPrev =prevSize/2;
