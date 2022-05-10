@@ -10,7 +10,7 @@ body{
     color: white;
     font-size: 3em;
     font-weight: bold;
-    top: 227px;
+    top: 192px;
     right: 30px;
 
 }
@@ -19,7 +19,7 @@ body{
     padding: 10px;
     position: absolute;
     color: white;
-    font-size: 3em;
+    font-size: 2em;
     font-weight: bold;
     bottom: 22px;
     right: 30px;
@@ -27,5 +27,5 @@ body{
 }
 
 .juego{
-    /* width: 80vh; */
+    /* width: 80vw; */
 }

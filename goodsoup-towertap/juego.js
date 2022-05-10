@@ -41,7 +41,7 @@ function init() {
 
   // Cámara
   const aspect = window.innerWidth / window.innerHeight;
-  const width = 20;
+  const width = 30;
   const height = width / aspect;
   camera = new THREE.OrthographicCamera(
       // izq, der, arriba, abajo, plano cercano, plano lejano
@@ -177,8 +177,7 @@ render();
 // LISTENERS                                                                  //
 // -------------------------------------------------------------------------- //
 let jugando = true;
-//window.addEventListener("mousedown", manejador);
-//window.addEventListener("touchstart", manejador);
+window.addEventListener("touchstart", manejador);
 window.addEventListener("click", manejador);
 
 function manejador() {
@@ -190,7 +189,7 @@ function manejador() {
     jugando = true;
   }
   else {
-    divReglas.style.visibility = "hidden";
+    divReglas.innerText = "Aprieta R para resetear la partida";
     const head = pila[pila.length - 1];
     const prev = pila[pila.length - 2];
     var dir = head.direction;
