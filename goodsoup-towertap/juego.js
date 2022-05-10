@@ -25,6 +25,10 @@ var boolColgajo = false;
 const divLevel = document.getElementById("nivel");
 const divReglas = document.getElementById("reglas");
 
+//instrucciones
+let ins = "Con R reseteas la partida. Pero por ninguna razón pulses X.";
+
+
 init();
 
 /* -------------------------------------------------------------------------- */
@@ -153,18 +157,26 @@ var render = function () {
     //and NotLose
     const head = pila[pila.length - 1];
     //pila.forEach(function(cube){
-      if (head.direction == "z") {
-        head.threejs.position.z += 0.05;
-      }
-      if (head.direction == "x") {
-        head.threejs.position.x += 0.05;
-      }
+    if (head.direction == "z") {
+      head.threejs.position.z += 0.05;
+    }
+    if (head.direction == "x") {
+      head.threejs.position.x += 0.05;
+    }
 
-      if (boolColgajo)
-        colgajo.threejs.position.y -= 0.05;
+    let prev = pila[pila.length - 2];
+    var aux1prev = [prev.threejs.position.x - prev.width, prev.threejs.position.x + prev.width]; // auxiliar para comprobar si el bloque actual está encima del extremo anterior del bloque anterior
+      
+      if(head.threejs.position.x > aux1prev[1])
+        fin();
 
-      updateCamera();
-    //});
+    
+
+      
+    if (boolColgajo)
+      colgajo.threejs.position.y -= 0.05;
+
+    updateCamera();
   }
 
   // Render de la escena
@@ -189,7 +201,7 @@ function manejador() {
     jugando = true;
   }
   else {
-    divReglas.innerText = "Aprieta R para resetear la partida";
+    divReglas.innerText = ins;
     const head = pila[pila.length - 1];
     const prev = pila[pila.length - 2];
     var dir = head.direction;
@@ -208,6 +220,9 @@ function manejador() {
       const aux1prev = [prev.threejs.position.x - prev.width, prev.threejs.position.x + prev.width]; // auxiliar para comprobar si el bloque actual está encima del extremo anterior del bloque anterior
       const aux2prev = [prev.threejs.position.z - prev.depth, prev.threejs.position.z + prev.depth]; // auxiliar para comprobar si el bloque actual está encima del extremo posterior del bloque anterior
       
+      if(head.threejs.position.x > aux1prev[1])
+        fin();
+
       if (head.direction == "x") {
         if (head.threejs.position.x > aux1prev[0] &&
           head.threejs.position.x < aux1prev[1]) { // Si está encima
@@ -215,8 +230,9 @@ function manejador() {
             encima = true;
             cortar(xhead, xprev);
         }
-        else {
+        else{
           console.log("No encima!");
+          
           //Game Over
           //gestión de derrota
           fin(); 
@@ -351,15 +367,24 @@ function splitHead(head, headExtremos, delta, newSize, direccion) {
   }
 }
 
+
 //Resetear el juego
 window.addEventListener("keydown", (e) => {
-  if(e.key == "r"){
+  if(e.key == "r" || e.key == "R")
     reset();
-}
+  if(e.key == "x" || e.key == "X"){
+
+    divReglas.innerText = "Desobediente y sin ninguna vergüenza. Me gusta.";
+    ins = "Desobediente y sin ninguna vergüenza. Me gusta.";
+
+    
+  }
+  
 });
 
 function fin(){
   console.log("Game Over!");
+  divReglas.innerText = "Perdiste, la verdad, no te voy a mentir. Pulsa R, anda, que nos echamos otra.";
   //gestión de derrota
   //reset();
   lose = true;
