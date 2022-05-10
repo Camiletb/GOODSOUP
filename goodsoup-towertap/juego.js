@@ -2,7 +2,7 @@
 // BASIC SETUP                                                                //
 // -------------------------------------------------------------------------- //
 
-//Globales de three.js
+// Globales de three.js
 let camera, scene, renderer;
 let pila = [];  // Pila que contiene los bloques
 const hBox = 1; // Altura del bloque
@@ -12,12 +12,16 @@ const hCamera = 5;  // Posición inicial de la cámara
 let BoxSize = [initBoxSize, initBoxSize]; // Array de tamaños de cajas
 let nuevoCentro = [];
 
-//Contadores y auxiliares
+// Contadores y auxiliares
 let levelCont = 1;
 let encima = false;
 let lose = false;
 let end = false;
 var boolCubo = true;
+
+// Elementos DOM
+const divLevel = document.getElementById("nivel");
+const divReglas = document.getElementById("reglas");
 
 init();
 
@@ -87,6 +91,8 @@ function addNivel (x, z, width, depth, direction, color) {
   nivel.depth = depth;
 
   pila.push(nivel); // Añadir el nivel a la pila
+
+  divLevel.innerText = pila.length - 1;
 }
 
 function createColgajo (x, z, width, depth) {
@@ -184,14 +190,16 @@ let jugando = true;
 //window.addEventListener("touchstart", manejador);
 window.addEventListener("click", manejador);
 
-function manejador(){
-  if(!jugando){
+function manejador() {
+  if (!jugando) {
+    divReglas.style.visibility = "show";
     //renderer.setAnimationLoop(animation);
     //Usamos setAnimationLoop porque setAnimationFrame sólo se
     //ejecuta una vez, y necesitamos que la animación se ejecute en bucle
     jugando = true;
   }
-  else{
+  else {
+    divReglas.style.visibility = "hidden";
     const head = pila[pila.length - 1];
     const prev = pila[pila.length - 2];
     var dir = head.direction;
