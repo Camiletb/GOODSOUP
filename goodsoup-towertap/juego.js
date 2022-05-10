@@ -13,6 +13,12 @@ const hCamera = 5;  // Posición inicial de la cámara
 let BoxSize = [initBoxSize, initBoxSize]; // Array de tamaños de cajas
 let nuevoCentro = [];
 
+// Globales de tweens.js
+var tweens;
+
+// Variables de GLTFLoader
+const loader = new THREE.GLTFLoader();
+
 // Contadores y auxiliares
 let levelCont = 1;
 let encima = false;
@@ -25,7 +31,7 @@ var boolColgajo = false;
 const divLevel = document.getElementById("nivel");
 const divReglas = document.getElementById("reglas");
 
-//instrucciones
+// Instrucciones
 let ins = "Con 'R' reseteas la partida. Pero por ninguna razón pulses 'X'.";
 
 
@@ -39,6 +45,9 @@ function init() {
   end = false;
   scene = new THREE.Scene(); // Crear una escena vacía
   
+  // Tweens
+  tweens = [];
+
   // Primer nivel
   addNivel(0, 0, initBoxSize, initBoxSize);
   addNivel(-10, 0, initBoxSize, initBoxSize, "x");
@@ -397,7 +406,14 @@ function fin(){
   end = true;
   camera.position.set(0, 10*pila.length*hBox, 0);
   camera.lookAt(scene.position);
-  //gestión de victoria
+
+  // Loader
+  loader.load('/model/scene.gltf', function (gltf) {
+    shrek = glf.scene.children[0];
+    shrek.scale.set(0.5, 0.5, 0.5);
+    scene.add(gltf.scene); 
+    animate();
+  });
 
 }
 
