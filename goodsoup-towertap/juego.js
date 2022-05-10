@@ -45,7 +45,7 @@ function init() {
 
   // Cámara
   const aspect = window.innerWidth / window.innerHeight;
-  const width = 30;
+  const width = 20;
   const height = width / aspect;
   camera = new THREE.OrthographicCamera(
       // izq, der, arriba, abajo, plano cercano, plano lejano
@@ -395,7 +395,7 @@ function fin(){
   lose = true;
           jugando = false;
   end = true;
-  camera.position.set(10*pila.length*hBox, 10*pila.length*hBox, 0);
+  camera.position.set(0, 10*pila.length*hBox, 0);
   camera.lookAt(scene.position);
   //gestión de victoria
 
