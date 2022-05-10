@@ -1,15 +1,17 @@
-// ------------------------------------------------
-// BASIC SETUP
-// ------------------------------------------------
+// -------------------------------------------------------------------------- //
+// BASIC SETUP                                                                //
+// -------------------------------------------------------------------------- //
+
 //Globales de three.js
 let camera, scene, renderer;
-let pila = [];
-const hBox = 1;
-const initBoxSize = 5;
-const hCamera = 5; // posición inicial de la cámara
+let pila = [];  // Pila que contiene los bloques
+const hBox = 1; // Altura del bloque
+const initBoxSize = 5;  // Tamaño inicial del bloque
+const hCamera = 5;  // Posición inicial de la cámara
 
 let BoxSize = [initBoxSize, initBoxSize]; // Array de tamaños de cajas
 let nuevoCentro = [-10, 0];
+
 //Contadores y auxiliares
 let levelCont = 1;
 let encima = false;
@@ -17,11 +19,15 @@ let lose = false;
 let end = false;
 
 init();
-function init(){
+
+/* -------------------------------------------------------------------------- */
+/* Función init(): inicializa las variables del juego, setea la luz, escena,  */
+/* cámara y render, y crea los objetos que se van a usar.                     */
+/* -------------------------------------------------------------------------- */
+function init() {
   end = false;
   scene = new THREE.Scene(); // Crear una escena vacía
   
-  //
   // Primer nivel
   addNivel(0, 0, initBoxSize, initBoxSize);
   addNivel(-10, 0, initBoxSize, initBoxSize, "x");
@@ -37,66 +43,67 @@ function init(){
       height / 2, 
       height / -2, 
       1, 
-      1000 );
+      1000);
   camera.position.set(10, 3*hBox + hCamera, 10);
   camera.lookAt(scene.position);
 
-  //Iluminación
+  // Iluminación
   const a_light = new THREE.AmbientLight(0xffffff, 0.6); // Luz ambiente
   scene.add(a_light);
   const d_light = new THREE.DirectionalLight(0xffffff, 0.6); // Luz direccional
   d_light.position.set(10, 20, 0);
   scene.add(d_light);
 
-  
   // Configurar el render
   renderer = new THREE.WebGLRenderer({antialias:true}); // Crear con Antialiasing
   renderer.setClearColor("#000000"); // Configurar el clear color del render
-  renderer.setSize( window.innerWidth, window.innerHeight ); // Configurar tamaño del render
+  renderer.setSize(window.innerWidth, window.innerHeight); // Configurar tamaño del render
   renderer.shadowMap.enabled = true; // Habilitar sombra
   //renderer.setAnimationLoop(animation);
   document.body.appendChild( renderer.domElement ); // Añadir render al HTML
 }
 
 
-// ------------------------------------------------
-// FUN STARTS HERE
-// ------------------------------------------------
+// -------------------------------------------------------------------------- //
+// GAME FUNCTIONS                                                             //
+// -------------------------------------------------------------------------- //
 
-function addNivel(x, z, width, depth, direction){
+/* -------------------------------------------------------------------------- */
+/* Función addNivel(): crea un nuevo bloque y lo añade a la pila de niveles.  */
+/* -------------------------------------------------------------------------- */
+function addNivel(x, z, width, depth, direction) {
   const y = pila.length * hBox; // Posición de la nueva capa
   const nivel = createCube(x, y, z, width, depth);
-  //const direc;
   levelCont++;
   nivel.direction = direction;
   nivel.width = width;
   nivel.depth = depth;
-  // if(levelCont % 2 == 0)
-  //   nivel.direction = "z";
-  // else
-  //   nivel.direction = "x";
 
   pila.push(nivel); // Añadir el nivel a la pila
 }
 
-
+/* -------------------------------------------------------------------------- */
+/* Función createCube(): crea un nuevo bloque y lo devuelve a él mismo y      */
+/* sus dimensiones.                                                           */
+/* -------------------------------------------------------------------------- */
 createCube();
 function createCube(x, y, z, width, depth) {
-
   // Cubo
-  //var geometry = new THREE.BoxGeometry( initBoxSize, hBox, initBoxSize );
   var geometry, material, cube;
   geometry = new THREE.BoxGeometry( width, hBox, depth );
+
   if(pila.length % 2 == 0)
-    material = new THREE.MeshLambertMaterial( { color: 0xfb8e00 } );
+    material = new THREE.MeshLambertMaterial({color: 0xfb8e00});
   else
-    material = new THREE.MeshLambertMaterial( { color: 0x00ff00 } );
-  cube = new THREE.Mesh( geometry, material );
+    material = new THREE.MeshLambertMaterial({color: 0x00ff00});
+
+  cube = new THREE.Mesh(geometry, material);
   cube.position.set(x, y, z);
   //cube.position.set(0, 0, 0);
   //cube.rotateX(10);
   //cube.rotateY(Math.PI/4);
-  scene.add( cube ); // Añadir el cubo a la escena
+
+  scene.add(cube); // Añadir el cubo a la escena
 
   return {
     threejs: cube,
@@ -106,39 +113,40 @@ function createCube(x, y, z, width, depth) {
 }
   
 
-// Render Loop
+/* -------------------------------------------------------------------------- */
+/* Render loop                                                                */
+/* -------------------------------------------------------------------------- */
 var render = function () {
-  requestAnimationFrame( render );
+  requestAnimationFrame(render);
 
   //cube.rotation.y += 0.01;    
   //renderer.setAnimationLoop(animation);
   // if(!started)
   //   animation();
 
-  if(!end){
+  if (!end) {
     //and NotLose
     const head = pila[pila.length - 1];
     //pila.forEach(function(cube){
-      if(head.direction == "z"){
+      if (head.direction == "z") {
         head.threejs.position.z += 0.05;
       }
-      if(head.direction == "x"){
+      if (head.direction == "x") {
         head.threejs.position.x += 0.05;
       }
       updateCamera();
     //});
   }
 
-  //if
-  // Render la escena
+  // Render de la escena
   renderer.render(scene, camera);
 };
 
 render();
 
-// ------------------------------------------------
-// FUN ENDS HERE (LISTENERS STARTS HERE)
-// ------------------------------------------------
+// -------------------------------------------------------------------------- //
+// LISTENERS                                                                  //
+// -------------------------------------------------------------------------- //
 let jugando = true;
 //window.addEventListener("mousedown", manejador);
 //window.addEventListener("touchstart", manejador);
