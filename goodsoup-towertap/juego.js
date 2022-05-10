@@ -5,6 +5,7 @@
 // Globales de three.js
 let camera, scene, renderer;
 let pila = [];  // Pila que contiene los bloques
+let colgajo;
 const hBox = 1; // Altura del bloque
 const initBoxSize = 5;  // Tamaño inicial del bloque
 const hCamera = 5;  // Posición inicial de la cámara
@@ -18,6 +19,7 @@ let encima = false;
 let lose = false;
 let end = false;
 var boolCubo = true;
+var boolColgajo = false;
 
 // Elementos DOM
 const divLevel = document.getElementById("nivel");
@@ -78,40 +80,25 @@ function init() {
 /* -------------------------------------------------------------------------- */
 function addNivel (x, z, width, depth, direction, color) {
   var y;
+  var nivel;
 
-  if (boolCubo)
+  if (boolCubo) {
     y = pila.length * hBox; // Posición de la nueva capa
-  else
+    nivel = createCube(x, y, z, width, depth, color);
+    levelCont++;
+    nivel.direction = direction;
+    nivel.width = width;
+    nivel.depth = depth;
+    pila.push(nivel); // Añadir el nivel a la pila
+    divLevel.innerText = pila.length - 1;
+  }
+  else {
     y = (pila.length - 1) * hBox; // Posición y del colgajo
-
-  const nivel = createCube(x, y, z, width, depth, color);
-  levelCont++;
-  nivel.direction = direction;
-  nivel.width = width;
-  nivel.depth = depth;
-
-  pila.push(nivel); // Añadir el nivel a la pila
-
-  divLevel.innerText = pila.length - 1;
-}
-
-function createColgajo (x, z, width, depth) {
-  // Cubo
-  var geometry, material, cube;
-  geometry = new THREE.BoxGeometry( width, hBox, depth );
-
-  material = new THREE.MeshLambertMaterial({color: 0xffffff});
-
-  cube = new THREE.Mesh(geometry, material);
-  cube.position.set(x, y, z);
-
-  scene.add(cube); // Añadir el cubo a la escena
-
-  // return {
-  //   threejs: cube,
-  //   width,
-  //   depth
-  // };
+    colgajo = createCube(x, y, z, width, depth, color);
+    colgajo.direction = direction;
+    colgajo.width = width;
+    colgajo.depth = depth;
+  }
 }
 
 /* -------------------------------------------------------------------------- */
@@ -172,6 +159,10 @@ var render = function () {
       if (head.direction == "x") {
         head.threejs.position.x += 0.05;
       }
+
+      if (boolColgajo)
+        colgajo.threejs.position.y -= 0.05;
+
       updateCamera();
     //});
   }
@@ -346,20 +337,18 @@ function splitHead(head, headExtremos, delta, newSize, direccion) {
     addNivel(newPos, head.threejs.position.z, newSize, BoxSize[1], head.direction, 3);
     // Create colgajo
     boolCubo = false;
+    boolColgajo = true;
     addNivel(posColgajo, head.threejs.position.z, colgajo, BoxSize[1], head.direction, 4);
-    pila.pop();
     boolCubo = true;
-    // createColgajo(poscolgajo, head.threejs.position.z, colgajo, BoxSize[1], head.direction);
   }
   else { // viene de X
     // Resize head
     addNivel(head.threejs.position.x, newPos, BoxSize[0], newSize, head.direction, 3);
     // Create colgajo
     boolCubo = false;
+    boolColgajo = true;
     addNivel(head.threejs.position.x, posColgajo, BoxSize[0], colgajo, head.direction, 4);
-    pila.pop();
     boolCubo = true;
-    // createColgajo(head.threejs.position.x, poscolgajo, BoxSize[0], colgajo, head.direction);
   }
 }
 
