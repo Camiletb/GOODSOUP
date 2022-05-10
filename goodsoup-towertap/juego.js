@@ -45,7 +45,7 @@ function init() {
 
   // Cámara
   const aspect = window.innerWidth / window.innerHeight;
-  const width = 30;
+  const width = 20;
   const height = width / aspect;
   camera = new THREE.OrthographicCamera(
       // izq, der, arriba, abajo, plano cercano, plano lejano
@@ -110,21 +110,18 @@ function addNivel (x, z, width, depth, direction, color) {
 /* sus dimensiones.                                                           */
 /* -------------------------------------------------------------------------- */
 createCube();
-function createCube(x, y, z, width, depth, color) {
+function createCube(x, y, z, width, depth, colorb) {
   // Cubo
   var geometry, material, cube;
   geometry = new THREE.BoxGeometry( width, hBox, depth );
-
-  if (color == 3) {
-    material = new THREE.MeshLambertMaterial({color: 0xff0000});
+  const color = new THREE.Color(`hsl(${1 + pila.length * 10}, 50%, 50%)`);
+  //const colortorre = new THREE.Color(`hsl(${30 + pila.length * 4}, 100%, 50%)`);
+  if (colorb == 4) {
+    material = new THREE.MeshLambertMaterial({color: 0xffffff});
   }
-  else if (color == 4) {
-    material = new THREE.MeshLambertMaterial({color: 0x0000ff});
-  }
-  else if (pila.length % 2 == 0)
-    material = new THREE.MeshLambertMaterial({color: 0xfb8e00});
   else
-    material = new THREE.MeshLambertMaterial({color: 0x00ff00});
+    material = new THREE.MeshLambertMaterial({color});
+    //material = new THREE.MeshLambertMaterial({color: 0xfb8e00 + pila.length * 0x000020});
 
   cube = new THREE.Mesh(geometry, material);
   cube.position.set(x, y, z);
