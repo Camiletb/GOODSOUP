@@ -217,26 +217,30 @@ function manejador() {
       const zprev = [prev.threejs.position.z - prev.depth/2, prev.threejs.position.z + prev.depth/2];
       const aux1prev = [prev.threejs.position.x - prev.width, prev.threejs.position.x + prev.width]; // auxiliar para comprobar si el bloque actual está encima del extremo anterior del bloque anterior
       const aux2prev = [prev.threejs.position.z - prev.depth, prev.threejs.position.z + prev.depth]; // auxiliar para comprobar si el bloque actual está encima del extremo posterior del bloque anterior
-      if(head.direction == "x"){
-        if(head.threejs.position.x > aux1prev[0] &&
-           head.threejs.position.x < aux2prev[1]){ // Si está encima
-          console.log("Encima!");
-          encima = true;
-          cortar(xhead, xprev);
-        }else{
+      
+      if (head.direction == "x") {
+        if (head.threejs.position.x > aux1prev[0] &&
+          head.threejs.position.x < aux1prev[1]) { // Si está encima
+            console.log("Encima!");
+            encima = true;
+            cortar(xhead, xprev);
+        }
+        else {
           console.log("No encima!");
           //Game Over
           //gestión de derrota
           fin(); 
         } 
       }
+
       if(head.direction == "z"){
-        if(head.threejs.position.z > aux1prev[0] &&
-           head.threejs.position.z < aux2prev[1]){ // Si está encima
-          console.log("Encima!");
-          encima = true;
-          cortar(zhead, zprev);
-        }else{
+        if(head.threejs.position.z > aux2prev[0] &&
+          head.threejs.position.z < aux2prev[1]) { // Si está encima
+            console.log("Encima!");
+            encima = true;
+            cortar(zhead, zprev);
+        }
+        else {
           console.log("No encima!");
           //Game Over
           //gestión de derrota
