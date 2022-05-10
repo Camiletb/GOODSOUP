@@ -17,6 +17,7 @@ let levelCont = 1;
 let encima = false;
 let lose = false;
 let end = false;
+var boolCubo = true;
 
 init();
 
@@ -71,8 +72,14 @@ function init() {
 /* -------------------------------------------------------------------------- */
 /* Función addNivel(): crea un nuevo bloque y lo añade a la pila de niveles.  */
 /* -------------------------------------------------------------------------- */
-function addNivel(x, z, width, depth, direction, color) {
-  const y = pila.length * hBox; // Posición de la nueva capa
+function addNivel (x, z, width, depth, direction, color) {
+  var y;
+
+  if (boolCubo)
+    y = pila.length * hBox; // Posición de la nueva capa
+  else
+    y = (pila.length - 1) * hBox; // Posición y del colgajo
+
   const nivel = createCube(x, y, z, width, depth, color);
   levelCont++;
   nivel.direction = direction;
@@ -80,6 +87,25 @@ function addNivel(x, z, width, depth, direction, color) {
   nivel.depth = depth;
 
   pila.push(nivel); // Añadir el nivel a la pila
+}
+
+function createColgajo (x, z, width, depth) {
+  // Cubo
+  var geometry, material, cube;
+  geometry = new THREE.BoxGeometry( width, hBox, depth );
+
+  material = new THREE.MeshLambertMaterial({color: 0xffffff});
+
+  cube = new THREE.Mesh(geometry, material);
+  cube.position.set(x, y, z);
+
+  scene.add(cube); // Añadir el cubo a la escena
+
+  // return {
+  //   threejs: cube,
+  //   width,
+  //   depth
+  // };
 }
 
 /* -------------------------------------------------------------------------- */
@@ -94,6 +120,9 @@ function createCube(x, y, z, width, depth, color) {
 
   if (color == 3) {
     material = new THREE.MeshLambertMaterial({color: 0xff0000});
+  }
+  else if (color == 4) {
+    material = new THREE.MeshLambertMaterial({color: 0x0000ff});
   }
   else if (pila.length % 2 == 0)
     material = new THREE.MeshLambertMaterial({color: 0xfb8e00});
@@ -286,21 +315,39 @@ function splitHead(head, headExtremos, delta, newSize, direccion) {
   let p1 = headExtremos[1];
   let colgajo = Math.abs(delta);
   let newPos;
+  let posColgajo;
+
   if (delta >= 0) {
     newPos = headExtremos[0] + newSize/2;
+    posColgajo = headExtremos[1] - colgajo/2;
   }
   else {
     newPos = headExtremos[1] - newSize/2;
+    posColgajo = headExtremos[0] + colgajo/2;
   }
   
   pila.pop();
   scene.remove(head.threejs);
 
   if (direccion) { // viene de X
+    // Resize head
     addNivel(newPos, head.threejs.position.z, newSize, BoxSize[1], head.direction, 3);
+    // Create colgajo
+    boolCubo = false;
+    addNivel(posColgajo, head.threejs.position.z, colgajo, BoxSize[1], head.direction, 4);
+    pila.pop();
+    boolCubo = true;
+    // createColgajo(poscolgajo, head.threejs.position.z, colgajo, BoxSize[1], head.direction);
   }
-  else { // viene de z
+  else { // viene de X
+    // Resize head
     addNivel(head.threejs.position.x, newPos, BoxSize[0], newSize, head.direction, 3);
+    // Create colgajo
+    boolCubo = false;
+    addNivel(head.threejs.position.x, posColgajo, BoxSize[0], colgajo, head.direction, 4);
+    pila.pop();
+    boolCubo = true;
+    // createColgajo(head.threejs.position.x, poscolgajo, BoxSize[0], colgajo, head.direction);
   }
 }
 
