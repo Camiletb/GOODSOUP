@@ -45,7 +45,7 @@ function init() {
 
   // Cámara
   const aspect = window.innerWidth / window.innerHeight;
-  const width = 20;
+  const width = 30;
   const height = width / aspect;
   camera = new THREE.OrthographicCamera(
       // izq, der, arriba, abajo, plano cercano, plano lejano
@@ -166,9 +166,12 @@ var render = function () {
 
     let prev = pila[pila.length - 2];
     var aux1prev = [prev.threejs.position.x - prev.width, prev.threejs.position.x + prev.width]; // auxiliar para comprobar si el bloque actual está encima del extremo anterior del bloque anterior
-      
-      if(head.threejs.position.x > aux1prev[1])
-        fin();
+    var aux2prev = [prev.threejs.position.z - prev.depth, prev.threejs.position.z + prev.depth]; // auxiliar para comprobar si el bloque actual está encima del extremo posterior del bloque anterior
+
+    if(head.threejs.position.x > aux1prev[1])
+      fin();
+    if(head.threejs.position.z > aux2prev[1])
+      fin();
 
     
 
