@@ -71,9 +71,9 @@ function init() {
 /* -------------------------------------------------------------------------- */
 /* Función addNivel(): crea un nuevo bloque y lo añade a la pila de niveles.  */
 /* -------------------------------------------------------------------------- */
-function addNivel(x, z, width, depth, direction) {
+function addNivel(x, z, width, depth, direction, color) {
   const y = pila.length * hBox; // Posición de la nueva capa
-  const nivel = createCube(x, y, z, width, depth);
+  const nivel = createCube(x, y, z, width, depth, color);
   levelCont++;
   nivel.direction = direction;
   nivel.width = width;
@@ -87,12 +87,15 @@ function addNivel(x, z, width, depth, direction) {
 /* sus dimensiones.                                                           */
 /* -------------------------------------------------------------------------- */
 createCube();
-function createCube(x, y, z, width, depth) {
+function createCube(x, y, z, width, depth, color) {
   // Cubo
   var geometry, material, cube;
   geometry = new THREE.BoxGeometry( width, hBox, depth );
 
-  if(pila.length % 2 == 0)
+  if (color == 3) {
+    material = new THREE.MeshLambertMaterial({color: 0xff0000});
+  }
+  else if (pila.length % 2 == 0)
     material = new THREE.MeshLambertMaterial({color: 0xfb8e00});
   else
     material = new THREE.MeshLambertMaterial({color: 0x00ff00});
@@ -221,19 +224,16 @@ function manejador(){
         encima = false;
         //addNivel(siguienteX, siguienteZ, nWidth, nDepth, siguienteDir);
         console.log("Las dimensiones del cubo van a ser", nWidth," x ", nDepth);
-        addNivel(nuevoCentro[0], nuevoCentro[1], nWidth, nDepth, siguienteDir);
+        const next = addNivel(nuevoCentro[0], nuevoCentro[1], nWidth, nDepth, siguienteDir);
       }
     }
   }
 }
+
 // Conservar la parte del bloque que coincide con el anterior
 function cortar(headExtremos, prevExtremos){
     const head = pila[pila.length - 1];
     const prev = pila[pila.length - 2];
-    
-    //const restWidth = prev.width - (head.threejs.position.x - prev.threejs.position.x);
-    //const restDepth = prev.depth - (head.threejs.position.z - prev.threejs.position.z);
-
     
     //const p0 = prevExtremos[0];
     let p0 = 0;
@@ -253,18 +253,19 @@ function cortar(headExtremos, prevExtremos){
       delta = head.threejs.position.z - prev.threejs.position.z;
     }
     
-    let cuelgueSize = Math.abs(delta);
-    let overlap = headSize - cuelgueSize;
+    let colgajo = Math.abs(delta);
+    let overlap = headSize - colgajo;
     
     if (overlap > 0) { // cortar
       newSize = overlap;
       if (head.direction == "x") {
         BoxSize[0] = newSize;
-        //nuevoCentro[0] -= delta;
         if (delta < 0)
           nuevoCentro[0] = prevExtremos[0] + newSize/2;
         else
           nuevoCentro[0] = prevExtremos[1] - newSize/2;
+
+        splitHead(head, headExtremos, delta, newSize, 1);
       }
       else {
         BoxSize[1] = newSize;
@@ -272,68 +273,35 @@ function cortar(headExtremos, prevExtremos){
           nuevoCentro[1] = prevExtremos[0] + newSize/2;
         else
           nuevoCentro[1] = prevExtremos[1] - newSize/2;
+
+        splitHead(head, headExtremos, delta, newSize, 0);
       }
     }
-
     
-    
-    //Si el centro de la cabeza es mayor o menor que el centro del bloque anterior se queda a la derecha o a la izquierda del bloque anterior)
-    //let centroPrev =prevSize/2;
-    // if(head.position == "x"){
-    //     if(head.position.x <= prev.position.x){//antes de tiempo
-    //         //cogemos p0 de referencia
-    //         p0 = prevExtremos[0]; //nuevo p0
-    //         newSize = headSize - (prevExtremos[0] - headExtremos[0]); //nuevo width
-    //     }else{ //tarde
-    //         //cogemos p1 de referencia
-    //         p1 = prevExtremos[1];
-    //         newSize = headSize - (headExtremos[1] - prevExtremos[1]); //nuevo width
-            
-    //     }
-    //     BoxSize[0] = newSize;
-    //     console.log("Bloque[0]= ", BoxSize[0]);
-    // }
-    // if(head.direction == "z"){
-    //     if(head.position.z <= prev.position.z){//antes de tiempo
-    //         //cogemos p0 de referencia
-    //         p0 = prevExtremos[0]; //nuevo p0
-    //         newSize = headSize - (prevExtremos[0] - headExtremos[0]); //nuevo width
-    //     }
-    //     else{ //tarde
-    //         //cogemos p1 de referencia
-    //         p1 = prevExtremos[1];
-    //         newSize = headSize - (headExtremos[1] - prevExtremos[1]); //nuevo width
-            
-    //     }
-    //     BoxSize[1] = newSize;
-    // }
     console.log("El nuevo tamaño es", newSize);
-    
-    // let aux = Math.abs(newSize);
-    // if(newSize > 0){ //Izquierda
-    //     p0 = prevExtremos[0]; //nuevo p0
-    //     p1 = prevExtremos[0] + newSize; //nuevo p1
+}
 
-    // }else if (newSize < 0){ //derecha
-    //     p0 = prevExtremos[1] + newSize; //nuevo p0 (signo más porque newSize es negativa)
-    //     p1 = prevExtremos[1]; //nuevo p1
-    // }else{
-    //     console.log("Nada que cortar!");
-    // }
+function splitHead(head, headExtremos, delta, newSize, direccion) {
+  let p0 = headExtremos[0];
+  let p1 = headExtremos[1];
+  let colgajo = Math.abs(delta);
+  let newPos;
+  if (delta >= 0) {
+    newPos = headExtremos[0] + newSize/2;
+  }
+  else {
+    newPos = headExtremos[1] - newSize/2;
+  }
+  
+  pila.pop();
+  scene.remove(head.threejs);
 
-    // const pini = (p1 - p0) / 2; // nuevo centro
-    
-    // const newExtremos = [p0, p1];
-    // //const vectorMedidas = [newExtremos, newSize, pini];
-    // console.log("Nuevo tamaño: ", newSize);
-    // if(head.direction == "x"){
-    //     BoxSize[0] = aux;
-    //     nuevoCentro[1] = pini;
-    // }
-    // else{
-    //     BoxSize[1] = aux;
-    //     nuevoCentro[0] = pini;
-    // }
+  if (direccion) { // viene de X
+    addNivel(newPos, head.threejs.position.z, newSize, BoxSize[1], head.direction, 3);
+  }
+  else { // viene de z
+    addNivel(head.threejs.position.x, newPos, BoxSize[0], newSize, head.direction, 3);
+  }
 }
 
 //Resetear el juego
