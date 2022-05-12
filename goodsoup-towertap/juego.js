@@ -7,8 +7,8 @@ let camera, scene, renderer;
 let pila = [];  // Pila que contiene los bloques
 let colgajo;
 const hBox = 0.6; // Altura del bloque
-const initBoxSize = 3;  // Tamaño inicial del bloque
-const hCamera = 5;  // Posición inicial de la cámara
+const initBoxSize = 6;  // Tamaño inicial del bloque
+const hCamera = 3;  // Posición inicial de la cámara
 
 let BoxSize = [initBoxSize, initBoxSize]; // Array de tamaños de cajas
 let nuevoCentro = [];
@@ -164,10 +164,10 @@ var render = function () {
     const head = pila[pila.length - 1];
     //pila.forEach(function(cube){
     if (head.direction == "z") {
-      head.threejs.position.z += 0.05;
+      head.threejs.position.z += 0.15;
     }
     if (head.direction == "x") {
-      head.threejs.position.x += 0.05;
+      head.threejs.position.x += 0.15;
     }
 
     let prev = pila[pila.length - 2];
@@ -181,7 +181,7 @@ var render = function () {
 
       
     if (boolColgajo)
-      colgajo.threejs.position.y -= 0.05;
+      colgajo.threejs.position.y -= 0.1;
 
     TWEEN.update();
     updateCamera();
@@ -197,7 +197,7 @@ render();
 // LISTENERS                                                                  //
 // -------------------------------------------------------------------------- //
 let jugando = true;
-window.addEventListener("touchstart", manejador);
+//window.addEventListener("touchstart", manejador);
 window.addEventListener("click", manejador);
 
 function manejador() {
