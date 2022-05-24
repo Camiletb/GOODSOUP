@@ -7,11 +7,20 @@ let camera, scene, renderer;
 let pila = [];  // Pila que contiene los bloques
 let colgajo;
 const hBox = 0.6; // Altura del bloque
-const initBoxSize = 3;  // Tamaño inicial del bloque
-const hCamera = 5;  // Posición inicial de la cámara
+const initBoxSize = 6;  // Tamaño inicial del bloque
+const hCamera = 3;  // Posición inicial de la cámara
 
 let BoxSize = [initBoxSize, initBoxSize]; // Array de tamaños de cajas
 let nuevoCentro = [];
+
+// Globales de tweens.js
+var tweens;
+
+// Variables de GLTFLoader
+const loader = new THREE.GLTFLoader();
+var root;
+var shrekBool = false;
+var shrekTtl = 6000;
 
 // Contadores y auxiliares
 let levelCont = 1;
@@ -25,7 +34,7 @@ var boolColgajo = false;
 const divLevel = document.getElementById("nivel");
 const divReglas = document.getElementById("reglas");
 
-//instrucciones
+// Instrucciones
 let ins = "Con 'R' reseteas la partida. Pero por ninguna razón pulses 'X'.";
 
 
@@ -38,7 +47,7 @@ init();
 function init() {
   end = false;
   scene = new THREE.Scene(); // Crear una escena vacía
-  
+
   // Primer nivel
   addNivel(0, 0, initBoxSize, initBoxSize);
   addNivel(-10, 0, initBoxSize, initBoxSize, "x");
@@ -56,7 +65,7 @@ function init() {
       1, 
       1000);
   camera.position.set(10, 3*hBox + hCamera, 10);
-  camera.lookAt(scene.position);
+  camera.lookAt(scene.position);  
 
   // Iluminación
   const a_light = new THREE.AmbientLight(0xffffff, 0.6); // Luz ambiente
@@ -155,10 +164,10 @@ var render = function () {
     const head = pila[pila.length - 1];
     //pila.forEach(function(cube){
     if (head.direction == "z") {
-      head.threejs.position.z += 0.05;
+      head.threejs.position.z += 0.15;
     }
     if (head.direction == "x") {
-      head.threejs.position.x += 0.05;
+      head.threejs.position.x += 0.15;
     }
 
     let prev = pila[pila.length - 2];
@@ -170,12 +179,11 @@ var render = function () {
     if(head.threejs.position.z > aux2prev[1])
       fin();
 
-    
-
       
     if (boolColgajo)
-      colgajo.threejs.position.y -= 0.05;
+      colgajo.threejs.position.y -= 0.1;
 
+    TWEEN.update();
     updateCamera();
   }
 
@@ -189,7 +197,7 @@ render();
 // LISTENERS                                                                  //
 // -------------------------------------------------------------------------- //
 let jugando = true;
-window.addEventListener("touchstart", manejador);
+//window.addEventListener("touchstart", manejador);
 window.addEventListener("click", manejador);
 
 function manejador() {
@@ -210,7 +218,6 @@ function manejador() {
     nuevoCentro = [siguienteX, siguienteZ];
     if(pila.length > 0){
         const nuevasMedidas = [];
-      console.log("Click! Bloque número: ", pila.length, ".");
 
       // Comprobamos si el último bloque está encima del bloque anterior
       const xhead = [head.threejs.position.x - head.width/2, head.threejs.position.x + head.width/2];
@@ -226,13 +233,10 @@ function manejador() {
       if (head.direction == "x") {
         if (head.threejs.position.x > aux1prev[0] &&
           head.threejs.position.x < aux1prev[1]) { // Si está encima
-            console.log("Encima!");
             encima = true;
             cortar(xhead, xprev);
         }
-        else{
-          console.log("No encima!");
-          
+        else{          
           //Game Over
           //gestión de derrota
           fin(); 
@@ -242,12 +246,10 @@ function manejador() {
       if(head.direction == "z"){
         if(head.threejs.position.z > aux2prev[0] &&
           head.threejs.position.z < aux2prev[1]) { // Si está encima
-            console.log("Encima!");
             encima = true;
             cortar(zhead, zprev);
         }
         else {
-          console.log("No encima!");
           //Game Over
           //gestión de derrota
           fin();
@@ -270,7 +272,6 @@ function manejador() {
         //nuevoCentro = (siguienteX, siguienteZ);
         encima = false;
         //addNivel(siguienteX, siguienteZ, nWidth, nDepth, siguienteDir);
-        console.log("Las dimensiones del cubo van a ser", nWidth," x ", nDepth);
         const next = addNivel(nuevoCentro[0], nuevoCentro[1], nWidth, nDepth, siguienteDir);
       }
     }
@@ -324,8 +325,6 @@ function cortar(headExtremos, prevExtremos){
         splitHead(head, headExtremos, delta, newSize, 0);
       }
     }
-    
-    console.log("El nuevo tamaño es", newSize);
 }
 
 function splitHead(head, headExtremos, delta, newSize, direccion) {
@@ -375,6 +374,10 @@ window.addEventListener("keydown", (e) => {
   if(e.key == "x" || e.key == "X"){
     divReglas.innerText = "Oye. Eso era una 'X'!";
     ins = "Desobediente y sin ninguna vergüenza. Me gusta. Con 'Z' puedes volver a las instrucciones.";
+    if (!shrekBool) {
+      _LoadAnimatedModel();
+      shrekBool = true;
+    }
   }
   if(e.key == "z" || e.key == "Z"){
     divReglas.innerText = "Ah, pues no.";
@@ -388,7 +391,6 @@ window.addEventListener("keydown", (e) => {
 });
 
 function fin(){
-  console.log("Game Over!");
   divReglas.innerText = "Perdiste, la verdad, no te voy a mentir. Pulsa R, anda, que nos echamos otra.";
   //gestión de derrota
   //reset();
@@ -396,9 +398,7 @@ function fin(){
           jugando = false;
   end = true;
   camera.position.set(0, 10*pila.length*hBox, 0);
-  camera.lookAt(scene.position);
-  //gestión de victoria
-
+  camera.lookAt(scene.position);  
 }
 
 function reset(){
@@ -437,6 +437,42 @@ function updateCamera(){
 
     //camera.position.set(10, hCamera + levelCont * hBox, 10);
     //camera.position.set(camera.position.x, hBox * pila.length + hCamera, camera.position.z);
+
+  renderer.render(scene, camera);
+}
+
+function _LoadAnimatedModel() {
+  // Loader
+  loader.load('model/scene.gltf', function(gltf) {
+    root = gltf.scene;
+    root.name = "shrek";
+    root.position.y = pila.length * hBox;
+    root.scale.set(1.5, 1.5, 1.5);
+
+    mixer = new THREE.AnimationMixer(root);
+    mixer.clipAction(gltf.animations[0]).play();
+
+    scene.add(root);
+    animate();
+  }, function(xhr){console.log((xhr.loaded/xhr.total * 100) + "% loaded");},
+     function(error){console.log("Error: " + error);});
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+
+  var shrek = scene.getObjectByName("shrek");
+
+  var target = {x: shrek.rotation.x, y: shrek.rotation.y + 150 * Math.PI, z: shrek.rotation.z};
+  var rotation = shrek.rotation;
+  var tween = new TWEEN.Tween(rotation).to(target, shrekTtl);
+  tween.easing(TWEEN.Easing.Bounce.Out);
+  tween.start();
+
+  tween.onComplete(function(){
+		shrekBool = false;
+    scene.remove(root);
+	});
 
   renderer.render(scene, camera);
 }
